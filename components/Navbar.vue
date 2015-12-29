@@ -14,7 +14,7 @@
     <div class="row">
       <div class="large-12 columns space-between">
 
-        <input type="text" name="search" placeholder="SEARCH" v-show="status.auth">
+        <input type="text" name="search" placeholder="SEARCH" v-model="keyWord" @input="search" v-show="status.auth">
         <div v-show="status.auth">
           <button type="button" @click="all">SHOW ALL</button>
           <button type="button" @click="sort">SORT BY CREATE TIME</button>
@@ -41,12 +41,17 @@
 
     data() {
       return {
+        keyWord: '',
+
         passwd: '',
         iv: '',
       }
     },
 
     methods: {
+      search() {
+        this.$dispatch('search', this.keyWord);
+      },
       all() {
         this.$dispatch('all');
       },

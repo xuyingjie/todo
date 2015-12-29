@@ -17,7 +17,7 @@
   <div class="row">
     <div class="large-12 columns">
       <Tag></Tag>
-      <Callout v-for="item in list" :item="item" v-show="item.content | hasKeyword | hasTag"></Callout>
+      <Callout v-for="item in list" :item="item" v-show="item.content | hasKeyword keyWord"></Callout>
     </div>
   </div>
 
@@ -76,9 +76,11 @@
           out = out.concat(this.done);
         }
         if (this.status.sortByCreateTime) {
-          console.log('sortByCreateTime');
+          out.reverse();
         } else {
-          console.log('sortByChangeTime');
+          out.sort((a, b) => {
+            return Date.parse(b.lastChange) - Date.parse(a.lastChange);
+          })
         }
         return out;
       }
@@ -88,14 +90,14 @@
       auth(v) {
         this.status.auth = v;
       },
+      search(keyWord) {
+        this.keyWord = keyWord;
+      },
       all() {
         this.status.showAll = this.status.showAll ? false : true;
       },
       sort() {
         this.status.sortByCreateTime = this.status.sortByCreateTime ? false : true;
-      },
-      search() {
-
       },
       add() {
         this.current = {color: 'primary'};
