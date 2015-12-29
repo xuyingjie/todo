@@ -7,6 +7,9 @@
     left: 0;
     background-color: rgba(255, 255, 255, 0.8);
   }
+  .layer .row {
+    width: 100%;
+  }
 </style>
 
 <template>
@@ -16,19 +19,19 @@
 
         <nav class="space-between">
           <input type="text" name="tag" v-model="item.tags">
-          <select>
-            <option value="primary">PRIMARY</option>
+          <select v-model="item.color">
+            <option value="primary" selected>PRIMARY</option>
             <option value="secondary">SECONDARY</option>
             <option value="success">SUCCESS</option>
             <option value="warning">WARNING</option>
             <option value="alert">ALERT</option>
           </select>
         </nav>
-        <textarea rows="8" cols="40"></textarea>
+        <textarea rows="12" cols="40" v-model="item.content"></textarea>
         <label>INSERT FILE
           <input type="file">
         </label>
-        <button type="button" class="button">SAVE</button>
+        <button type="button" class="button" @click="save">SAVE</button>
 
       </div>
     </div>
@@ -38,13 +41,13 @@
 <script lang="babel">
 
   export default {
-    props: ['current'],
+    props: ['item'],
 
-    data() {
-      return {
-        // item: this.current,
+    methods: {
+      save() {
+        this.$dispatch('save', this.item);
       }
-    },
+    }
 
   }
 

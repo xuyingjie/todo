@@ -22,10 +22,10 @@
           <button type="button" @click="logout">LOGOUT</button>
         </div>
 
-        <form class="space-between" @submit="login" v-else>
-          <input type="password" placeholder="Little Pei's birthday">
-          <input type="text" placeholder="The meaning of DZT">
-          <input type="submit" value="LOGIN">
+        <form class="space-between" @submit.prevent="login" v-else>
+          <input type="password" placeholder="Little Pei's birthday" v-model="passwd">
+          <input type="text" placeholder="The meaning of DZT" v-model="iv">
+          <input type="submit" value="LOGIN" @click="login">
         </form>
 
       </div>
@@ -34,8 +34,17 @@
 </template>
 
 <script lang="babel">
+  import {get} from '../utils/http';
+
   export default {
     props: ['status'],
+
+    data() {
+      return {
+        passwd: '',
+        iv: '',
+      }
+    },
 
     methods: {
       all() {
@@ -51,7 +60,15 @@
         this.$dispatch('auth', false);
       },
       login() {
-        this.$dispatch('auth', true);
+        get({
+          key: 'user',
+          passwd: this.passwd,
+          iv: this.iv,
+          success: data => {
+            localStorage.user = JSON.stringify(data.user);
+            this.$dispatch('auth', true);
+          },
+        });
       },
     }
   }

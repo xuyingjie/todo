@@ -12,16 +12,16 @@
 
 
 <template>
-  <Navbar :status="status" @search="search" @add="add" @auth="auth" @sort="sort" @all="all"></Navbar>
+  <Navbar :status="status"></Navbar>
 
   <div class="row">
     <div class="large-12 columns">
       <Tag></Tag>
-      <Callout v-for="item in list" :item="item" @edit="edit" v-if="item.content | hasKeyword | hasTag"></Callout>
+      <Callout v-for="item in list" :item="item" v-show="item.content | hasKeyword | hasTag"></Callout>
     </div>
   </div>
 
-  <Editor :current="current" @save="save" v-show="status.edit"></Editor>
+  <Editor :item="current" v-show="status.edit"></Editor>
 </template>
 
 
@@ -31,34 +31,35 @@
   import Callout from './Callout.vue';
   import Editor from './Editor.vue';
 
+  import {get, upload} from '../utils/http';
+  import { timeDiff } from '../utils/crypto';
+
   export default {
     data() {
       return {
-        todo: [{
-          id: '123',
-          content: 'todo',
-          createTime: '',
-          lastChange: '',
-          color: 'primary',
-          tags: ['vue', 'js'],
-          complete: false,
-        }],
-        done: [{
-          id: '345',
-          content: 'done',
-          createTime: '',
-          lastChange: '',
-          color: 'success',
-          tags: ['vue'],
-          complete: true,
-        }],
+        version: {
+          todo: 0,
+          done: 0,
+        },
+        todo: [
+          // {
+          //   id: '123',
+          //   content: 'todo',
+          //   createTime: '',
+          //   lastChange: '',
+          //   color: 'primary',
+          //   tags: ['vue', 'js'],
+          //   complete: false,
+          // }
+        ],
+        done: [],
 
         tagGroup: [],
         tag: '',
         keyWord: '',
 
         status: {
-          auth: true,
+          auth: false,
           edit: false,
           showAll: false,
           sortByCreateTime: false,
@@ -83,7 +84,7 @@
       }
     },
 
-    methods: {
+    events: {
       auth(v) {
         this.status.auth = v;
       },
@@ -97,17 +98,81 @@
 
       },
       add() {
+        this.current = {color: 'primary'};
         this.status.edit = true;
       },
       edit(id) {
+        this.current = Object.assign({}, this.todo.filter(element => {
+          return element.id === id;
+        })[0]);
+
         this.status.edit = true;
-        // TEST
-        // this.current = this.todo[0];
       },
-      save() {
+      save(item) {
+        this.version.todo += 1;
 
+        let out = [...this.todo];
+
+        item.lastChange = new Date().toString();
+        if (!item.id) {
+          item.id = timeDiff();
+          item.createTime = item.lastChange;
+          out.push(item);
+        } else {
+          out = out.map(el => {
+            if (el.id === item.id) {
+              return item;
+            } else {
+              return el;
+            }
+          })
+        }
+
+        upload({
+          key: 'todo/' + this.version.todo,
+          data: JSON.stringify(out),
+          success: () => {
+
+            upload({
+              key: 'version',
+              data: JSON.stringify(this.version),
+              success: () => {
+                this.todo = out;
+                this.status.edit = false;
+              }
+            });
+
+          }
+        });
       },
 
+    },
+
+    compiled() {
+      if (localStorage.user) {
+        this.status.auth = true;
+        get({
+          key: 'version',
+          success: data => {
+            this.version = data;
+
+            get({
+              key: 'todo/' + this.version.todo,
+              success: data => {
+                this.todo = data;
+              }
+            });
+
+            // get({
+            //   key: 'done/' + this.version.done,
+            //   success: data => {
+            //     this.done = data;
+            //   }
+            // });
+
+          }
+        })
+      }
     },
 
     components: {
