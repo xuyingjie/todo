@@ -62,6 +62,7 @@
         this.$dispatch('add');
       },
       logout() {
+        localStorage.removeItem('user');
         this.$dispatch('auth', false);
       },
       login() {

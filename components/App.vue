@@ -14,7 +14,7 @@
 <template>
   <Navbar :status="status"></Navbar>
 
-  <div class="row">
+  <div class="row" v-show="status.auth">
     <div class="large-12 columns">
       <Tag></Tag>
       <Callout v-for="item in list" :item="item" v-show="item.content | hasKeyword keyWord"></Callout>
@@ -87,8 +87,11 @@
     },
 
     events: {
-      auth(v) {
-        this.status.auth = v;
+      auth(status) {
+        if (status) {
+          this.init();
+        }
+        this.status.auth = status;
       },
       search(keyWord) {
         this.keyWord = keyWord;
@@ -150,9 +153,8 @@
 
     },
 
-    compiled() {
-      if (localStorage.user) {
-        this.status.auth = true;
+    methods: {
+      init() {
         get({
           key: 'version',
           success: data => {
@@ -173,7 +175,14 @@
             // });
 
           }
-        })
+        });
+      },
+    },
+
+    compiled() {
+      if (localStorage.user) {
+        this.status.auth = true;
+        this.init();
       }
     },
 
