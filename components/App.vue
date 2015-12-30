@@ -1,26 +1,6 @@
-<style>
-  .space-between {
-    display: flex;
-    justify-content: space-between;
-  }
-  .middle {
-    display: flex;
-    align-items: center;
-  }
-
-</style>
-
-
 <template>
   <Navbar :status="status"></Navbar>
-
-  <div class="row" v-show="status.auth">
-    <div class="large-12 columns">
-      <Tag></Tag>
-      <Callout v-for="item in list" :item="item" v-show="item.content | hasKeyword keyWord"></Callout>
-    </div>
-  </div>
-
+  <Callout v-for="item in list" :item="item" v-show="item.content | hasKeyword keyWord"></Callout>
   <Editor :item="current" v-show="status.edit"></Editor>
 </template>
 
@@ -90,6 +70,13 @@
       auth(status) {
         if (status) {
           this.init();
+        } else {
+          localStorage.removeItem('user');
+          this.version = {};
+          this.todo = [];
+          this.done = [];
+          this.current = {};
+          this.status.edit = false;
         }
         this.status.auth = status;
       },

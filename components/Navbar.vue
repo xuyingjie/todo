@@ -1,36 +1,41 @@
 <style>
-  .x-bar {
-    height: 2.5rem;
-    background-color: #007095;
-    margin-bottom: 1.25rem;
+  .bar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
-  .x-bar input[name=search] {
-    width: 200px;
+  .bar input[type=text] {
+    margin-right: 10px;
+  }
+  .bar form {
+    width: 100%;
+    display: flex;
+  }
+  .bar form input {
+    margin-right: 10px;
   }
 </style>
 
 <template>
-  <nav class="x-bar">
-    <div class="row">
-      <div class="large-12 columns space-between">
+  <div class="bar">
+    <nav class="row">
 
-        <input type="text" name="search" placeholder="SEARCH" v-model="keyWord" @input="search" v-show="status.auth">
-        <div v-show="status.auth">
-          <button type="button" @click="all">SHOW ALL</button>
-          <button type="button" @click="sort">SORT BY CREATE TIME</button>
-          <button type="button" @click="add">ADD</button>
-          <button type="button" @click="logout">LOGOUT</button>
-        </div>
-
-        <form class="space-between" @submit.prevent="login" v-else>
-          <input type="password" placeholder="Little Pei's birthday" v-model="passwd">
-          <input type="text" placeholder="The meaning of DZT" v-model="iv">
-          <input type="submit" value="LOGIN" @click="login">
-        </form>
-
+      <input class="item" type="text" name="search" placeholder="Search..." v-model="keyWord" @input="search" v-show="status.auth">
+      <div v-show="status.auth">
+        <button type="button" @click="all">SHOW ALL</button>
+        <button type="button" @click="sort">SORT BY CREATE TIME</button>
+        <button type="button" @click="add">ADD</button>
+        <button type="button" @click="logout">LOGOUT</button>
       </div>
-    </div>
-  </nav>
+
+      <form @submit.prevent="login" v-else>
+        <input type="password" placeholder="Little Pei's birthday" v-model="passwd">
+        <input type="text" placeholder="The meaning of DZT" v-model="iv">
+        <input class="button" type="submit" value="LOGIN" @click="login">
+      </form>
+
+    </nav>
+  </div>
 </template>
 
 <script lang="babel">
@@ -62,7 +67,6 @@
         this.$dispatch('add');
       },
       logout() {
-        localStorage.removeItem('user');
         this.$dispatch('auth', false);
       },
       login() {
