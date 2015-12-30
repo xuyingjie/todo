@@ -7,7 +7,6 @@
 
 <script lang="babel">
   import Navbar from './Navbar.vue';
-  import Tag from './Tag.vue';
   import Callout from './Callout.vue';
   import Editor from './Editor.vue';
 
@@ -28,14 +27,11 @@
           //   createTime: '',
           //   lastChange: '',
           //   color: 'primary',
-          //   tags: ['vue', 'js'],
           //   complete: false,
           // }
         ],
         done: [],
 
-        tagGroup: [],
-        tag: '',
         keyWord: '',
 
         status: {
@@ -175,7 +171,6 @@
 
     components: {
       Navbar,
-      Tag,
       Callout,
       Editor,
     }
