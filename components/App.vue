@@ -1,6 +1,15 @@
+<style>
+.fade-enter {
+  animation: fadeInDown .5s;
+}
+.fade-leave {
+  animation: fadeOutDown .5s;
+}
+</style>
+
 <template>
   <Navbar :status="status"></Navbar>
-  <Callout v-for="item in list" :item="item" v-show="item.content | hasKeyword keyWord"></Callout>
+  <Callout transition="fade" v-for="item in list" :item="item" v-show="item.content | hasKeyword keyWord"></Callout>
   <Editor :item="current" v-show="status.edit"></Editor>
 </template>
 

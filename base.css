@@ -119,3 +119,24 @@ input[type=text], input[type=password], textarea {
   background: #ffae00;
   color: #fefefe;
 }
+
+/*https://github.com/daneden/animate.css*/
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fadeOutDown {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+}
