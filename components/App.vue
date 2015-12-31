@@ -13,7 +13,6 @@
   <Editor :item="current" v-show="status.edit"></Editor>
 </template>
 
-
 <script lang="babel">
   import Navbar from './Navbar.vue';
   import Callout from './Callout.vue';
@@ -27,7 +26,6 @@
       return {
         version: {
           todo: 0,
-          done: 0,
         },
         todo: [
           // {
@@ -39,7 +37,6 @@
           //   complete: false,
           // }
         ],
-        done: [],
 
         keyWord: '',
 
@@ -57,8 +54,10 @@
     computed: {
       list() {
         let out = [...this.todo];
-        if (this.status.showAll) {
-          out = out.concat(this.done);
+        if (!this.status.showAll) {
+          out = out.filter(el => {
+            return !el.complete;
+          });
         }
         if (this.status.sortByCreateTime) {
           out.reverse();
@@ -79,9 +78,7 @@
           localStorage.removeItem('user');
           this.version = {};
           this.todo = [];
-          this.done = [];
           this.current = {};
-          this.status.edit = false;
         }
         this.status.auth = status;
       },
@@ -94,8 +91,11 @@
       sort() {
         this.status.sortByCreateTime = this.status.sortByCreateTime ? false : true;
       },
+      cancel() {
+        this.status.edit = false;
+      },
       add() {
-        this.current = {color: 'primary'};
+        this.current = {color: 'primary', complete: false};
         this.status.edit = true;
       },
       edit(id) {
@@ -104,6 +104,35 @@
         })[0]);
 
         this.status.edit = true;
+      },
+      done(id) {
+        this.version.todo += 1;
+
+        let out = [...this.todo];
+        out = out.map(el => {
+          if (el.id === id) {
+            el.complete = el.complete ? false : true;
+            return el;
+          } else {
+            return el;
+          }
+        });
+
+        upload({
+          key: 'todo/' + this.version.todo,
+          data: JSON.stringify(out),
+          success: () => {
+
+            upload({
+              key: 'version',
+              data: JSON.stringify(this.version),
+              success: () => {
+                this.todo = out;
+              }
+            });
+
+          }
+        });
       },
       save(item) {
         this.version.todo += 1;
@@ -122,7 +151,7 @@
             } else {
               return el;
             }
-          })
+          });
         }
 
         upload({
@@ -158,13 +187,6 @@
                 this.todo = data;
               }
             });
-
-            // get({
-            //   key: 'done/' + this.version.done,
-            //   success: data => {
-            //     this.done = data;
-            //   }
-            // });
 
           }
         });

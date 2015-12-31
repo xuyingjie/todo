@@ -30,8 +30,8 @@
     <nav class="row">
       <template v-if="status.auth">
         <input class="item" type="text" name="search" placeholder="Search..." v-model="keyWord" @input="search">
-        <button type="button" @click="all">SHOW ALL</button>
-        <button type="button" @click="sort">SORT BY CREATE TIME</button>
+        <button type="button" class="{{status.showAll?'active':''}}" @click="all">SHOW ALL</button>
+        <button type="button" class="{{status.sortByCreateTime?'active':''}}" @click="sort">SORT BY CREATE TIME</button>
         <button type="button" @click="add">ADD</button>
         <button type="button" @click="logout">LOGOUT</button>
       </template>

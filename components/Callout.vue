@@ -37,24 +37,44 @@
 <template>
   <div class="row {{item.color}} card">
     <section>
-      {{item.content}}
+      {{{content}}}
     </section>
     <nav>
       <span class="item">{{new Date(item.lastChange).toDateString()}}</span>
-      <button type="button" @click="edit(item.id)">EDIT</button>
-      <button type="button">DONE</button>
+      <template v-if="!item.complete">
+        <button type="button" @click="edit(item.id)">EDIT</button>
+        <button type="button" @click="done(item.id)">DONE</button>
+      </template>
+      <button type="button" @click="redo(item.id)" v-else>REDO</button>
     </nav>
   </div>
 </template>
 
 
 <script lang="babel">
+  import marked from 'marked';
+
   export default {
     props: ['item'],
+
+    computed: {
+      content() {
+        return marked(this.item.content, {
+          breaks: true,
+          sanitize: true,
+        });
+      }
+    },
 
     methods: {
       edit(id) {
         this.$dispatch('edit', id);
+      },
+      done(id) {
+        this.$dispatch('done', id);
+      },
+      redo(id) {
+        this.$dispatch('done', id);
       },
     }
   }
