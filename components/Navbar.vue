@@ -3,6 +3,15 @@
     width: 100%;
     display: flex;
     justify-content: center;
+
+    background-color: rgba(255, 255, 255, 0.9);
+    color: rgb(66, 66, 66);
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+    padding: 7px 0;
+
+    position: fixed;
+    left: 0;
+    top: 0;
   }
   .bar input[type=text] {
     margin-right: 10px;
@@ -19,14 +28,13 @@
 <template>
   <div class="bar">
     <nav class="row">
-
-      <input class="item" type="text" name="search" placeholder="Search..." v-model="keyWord" @input="search" v-show="status.auth">
-      <div v-show="status.auth">
+      <template v-if="status.auth">
+        <input class="item" type="text" name="search" placeholder="Search..." v-model="keyWord" @input="search">
         <button type="button" @click="all">SHOW ALL</button>
         <button type="button" @click="sort">SORT BY CREATE TIME</button>
         <button type="button" @click="add">ADD</button>
         <button type="button" @click="logout">LOGOUT</button>
-      </div>
+      </template>
 
       <form @submit.prevent="login" v-else>
         <input type="password" placeholder="Little Pei's birthday" v-model="passwd">

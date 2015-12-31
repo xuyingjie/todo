@@ -17,10 +17,25 @@
   padding: 0 16px;
   line-height: 36px;
 }
+.down .delete {
+  position: absolute;
+  height: 100%;
+  width: 12px;
+  top: 0;
+  right: 0;
+  color: rgba(255, 255, 255, 0);
+  background: rgba(236, 88, 64, 0.2);
+  transition: all .5s linear;
+}
+.down .delete:hover {
+  width: 24px;
+  color: rgba(255, 255, 255, 1);
+  background: rgba(236, 88, 64, 0.8);
+}
 </style>
 
 <template>
-  <div class="row card {{item.color}}">
+  <div class="row {{item.color}} card">
     <section>
       {{item.content}}
     </section>
