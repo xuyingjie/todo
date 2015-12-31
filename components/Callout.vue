@@ -32,6 +32,9 @@
   color: rgba(255, 255, 255, 1);
   background: rgba(236, 88, 64, 0.8);
 }
+.remove {
+  color: rgba(255, 0, 0, 0.8);
+}
 </style>
 
 <template>
@@ -45,7 +48,10 @@
         <button type="button" @click="edit(item.id)">EDIT</button>
         <button type="button" @click="done(item.id)">DONE</button>
       </template>
-      <button type="button" @click="redo(item.id)" v-else>REDO</button>
+      <template v-else>
+        <button type="button" class="remove" @click="rm(item.id)">DELETE</button>
+        <button type="button" @click="redo(item.id)">REDO</button>
+      </template>
     </nav>
   </div>
 </template>
@@ -75,6 +81,9 @@
       },
       redo(id) {
         this.$dispatch('done', id);
+      },
+      rm(id) {
+        this.$dispatch('rm', id);
       },
     }
   }

@@ -106,8 +106,6 @@
         this.status.edit = true;
       },
       done(id) {
-        this.version.todo += 1;
-
         let out = [...this.todo];
         out = out.map(el => {
           if (el.id === id) {
@@ -118,27 +116,12 @@
           }
         });
 
-        upload({
-          key: 'todo/' + this.version.todo,
-          data: JSON.stringify(out),
-          success: () => {
-
-            upload({
-              key: 'version',
-              data: JSON.stringify(this.version),
-              success: () => {
-                this.todo = out;
-              }
-            });
-
-          }
+        this.sync(out, () => {
+          this.todo = out;
         });
       },
       save(item) {
-        this.version.todo += 1;
-
         let out = [...this.todo];
-
         item.lastChange = new Date().toString();
         if (!item.id) {
           item.id = timeDiff();
@@ -154,21 +137,19 @@
           });
         }
 
-        upload({
-          key: 'todo/' + this.version.todo,
-          data: JSON.stringify(out),
-          success: () => {
+        this.sync(out, () => {
+          this.todo = out;
+          this.status.edit = false;
+        });
+      },
+      rm(id) {
+        let out = [...this.todo];
+        out = out.filter(el => {
+          return el.id !== id;
+        });
 
-            upload({
-              key: 'version',
-              data: JSON.stringify(this.version),
-              success: () => {
-                this.todo = out;
-                this.status.edit = false;
-              }
-            });
-
-          }
+        this.sync(out, () => {
+          this.todo = out;
         });
       },
 
@@ -185,6 +166,24 @@
               key: 'todo/' + this.version.todo,
               success: data => {
                 this.todo = data;
+              }
+            });
+
+          }
+        });
+      },
+      sync(out, callback) {
+        this.version.todo += 1;
+        upload({
+          key: 'todo/' + this.version.todo,
+          data: JSON.stringify(out),
+          success: () => {
+
+            upload({
+              key: 'version',
+              data: JSON.stringify(this.version),
+              success: () => {
+                callback();
               }
             });
 
