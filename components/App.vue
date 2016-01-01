@@ -9,7 +9,7 @@
 
 <template>
   <Navbar :status="status"></Navbar>
-  <Callout transition="fade" v-for="item in list" :item="item" v-show="item.content | hasKeyword keyWord"></Callout>
+  <Callout transition="fade" v-for="item in list" :item="item" v-show="hasKeyword(item.content) && !status.edit && (!item.complete || this.status.showAll)"></Callout>
   <Editor :item="current" v-show="status.edit"></Editor>
 </template>
 
@@ -38,7 +38,7 @@
           // }
         ],
 
-        keyWord: '',
+        keyword: '',
 
         status: {
           auth: false,
@@ -54,11 +54,6 @@
     computed: {
       list() {
         let out = [...this.todo];
-        if (!this.status.showAll) {
-          out = out.filter(el => {
-            return !el.complete;
-          });
-        }
         if (this.status.sortByCreateTime) {
           out.reverse();
         } else {
@@ -82,8 +77,8 @@
         }
         this.status.auth = status;
       },
-      search(keyWord) {
-        this.keyWord = keyWord;
+      search(keyword) {
+        this.keyword = keyword;
       },
       all() {
         this.status.showAll = this.status.showAll ? false : true;
@@ -189,6 +184,13 @@
 
           }
         });
+      },
+      hasKeyword(str) {
+        if (str.match(this.keyword)) {
+          return true;
+        } else {
+          return false;
+        }
       },
     },
 
