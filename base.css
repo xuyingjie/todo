@@ -34,8 +34,8 @@ body {
 img {
   max-width: 100%;
   height: auto;
-  /*display: inline-block;
-  vertical-align: middle;*/
+  display: inline-block;
+  vertical-align: bottom;
 }
 div,
 dl,

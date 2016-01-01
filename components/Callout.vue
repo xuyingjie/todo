@@ -17,6 +17,24 @@
   padding: 0 16px;
   line-height: 36px;
 }
+.card img {
+  border: 4px solid rgba(255, 255, 255, 0.5);
+  transition: border .5s ease;
+}
+.card img:hover {
+  border: 4px solid rgba(255, 255, 255, 0.8);
+}
+.down {
+  text-transform: none;
+  margin-right: 1rem;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.down:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+.down:active {
+  background-color: rgba(255, 255, 255, 0.6);
+}
 .down .delete {
   position: absolute;
   height: 100%;
@@ -59,16 +77,54 @@
 
 <script lang="babel">
   import marked from 'marked';
+  import {get} from '../utils/http';
 
   export default {
     props: ['item'],
 
     computed: {
       content() {
-        return marked(this.item.content, {
-          breaks: true,
-          sanitize: true,
-        });
+        let x = this.item.content;
+        let parts = x.split(/(!\[.*?,.*?,.*?,.*?\])/);
+        for (let i in parts) {
+          if (i % 2 === 0) {
+            if (parts[i] !== '') {
+              parts[i] = marked(parts[i], {
+                breaks: true,
+                sanitize: true,
+              });
+            }
+          } else {
+            let m = parts[i].match(/!\[(.*?),(.*?),(.*?),(.*?)\]/);
+            let file = {
+              name: m[1],
+              size: m[2],
+              type: m[3],
+              key: m[4],
+            };
+
+            let id = file.key.split('/')[1];
+            if (file.type.split('/')[0] === 'image') {
+              get({
+                key: file.key,
+                arrayBuffer: true,
+                success: data => {
+                  let blob = new Blob([data], {'type': file.type});
+                  document.getElementById(id).src = URL.createObjectURL(blob);
+                },
+              });
+              parts[i] = `<img src="" id="${id}" data-key="${file.key}">`;
+            } else {
+              parts[i] = `
+              <span class="down button" title="${file.name}" onclick="download('${file.name}','${file.type}','${file.key}')">
+                ${file.name} ${file.size}
+                <i class="delete" title="DELETE" onclick="event.stopPropagation();console.log('delete');">X</i>
+                <i id="${id}" class="progress"></i>
+              </span>`;
+            }
+          }
+        }
+        return parts.join('');
       }
     },
 
@@ -87,5 +143,39 @@
       },
     }
   }
+
+  // function download(name, type, key) {
+  //   let id = key.split('/')[1];
+  //   let progress = document.getElementById(id);
+  //   get({
+  //     key,
+  //     progress,
+  //     arrayBuffer: true,
+  //     success: data => {
+  //       let blob = new Blob([data], { type });
+  //       let objecturl = URL.createObjectURL(blob);
+  //
+  //       // 生成下载
+  //       let anchor = document.createElement('a');
+  //       anchor.href = objecturl;
+  //
+  //       // 新标签页打开
+  //       // anchor.target = '_blank';
+  //
+  //       // 直接下载
+  //       anchor.download = name;
+  //
+  //       document.body.appendChild(anchor);
+  //       let evt = document.createEvent('MouseEvents');
+  //       evt.initEvent('click', true, true);
+  //       anchor.dispatchEvent(evt);
+  //       document.body.removeChild(anchor);
+  //
+  //       if (progress) {
+  //         progress.value = 0;
+  //       }
+  //     },
+  //   });
+  // }
 
 </script>
