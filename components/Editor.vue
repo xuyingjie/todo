@@ -6,6 +6,7 @@
     bottom: 0;
     left: 0;
     background-color: rgba(255, 255, 255, 1);
+    z-index: 20;
 
     display: flex;
     flex-direction: column;
@@ -46,7 +47,6 @@
   .button .progress {
     position: absolute;
     height: 100%;
-    /*width: 70%;*/
     left: 0;
     bottom: 0;
     background: rgba(33, 153, 232, 0.2);

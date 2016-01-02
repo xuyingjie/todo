@@ -152,13 +152,15 @@
         let out = [...this.todo];
         out = out.map(el => {
           if (el.content.match(reg)) {
-            el.content = el.content.replace(reg, '');
-            el.lastChange = new Date().toString();
+            // 直接更新 el 视图不更新
+            let item = Object.assign({}, el);
+            item.content = item.content.replace(reg, '');
+            item.lastChange = new Date().toString();
+            return item;
+          } else {
+            return el;
           }
-          return el;
         });
-        // Test
-        // this.todo = out;
 
         upload({
           key,

@@ -260,7 +260,7 @@ button, .button {
   line-height: 36px;
   vertical-align: middle;
 }
-button:hover, .button:hover {
+button:hover, .button:hover, .button.hover {
   background-color: rgba(158,158,158,.2);
 }
 button:active, .button:active, button.active {

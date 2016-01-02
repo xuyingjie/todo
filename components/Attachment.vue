@@ -1,9 +1,64 @@
-<template>
-  <img :src="src" id="{{id}}" data-key="{{key}}" v-if="isImage">
+<style>
+.image {
+  display: inline-block;
+  position: relative;
+}
+.file {
+  cursor: auto;
+  text-transform: none;
+  margin-right: 1rem;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.file:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+.file:active {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+.ctrl {
+  display: flex;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+.ctrl .download, .ctrl .delete {
+  height: 36px;
+  width: 12px;
+  text-align: center;
+  line-height: 36px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0);
+  transition: all .5s linear;
+}
+.ctrl .download {
+  background: rgba(119, 119, 119, 0.1);
+}
+.ctrl .delete {
+  background: rgba(236, 88, 64, 0.1);
 
-  <p class="down button" title="{{name}}" @click="download" v-else>
+}
+.ctrl .download:hover {
+  width: 48px;
+  color: rgba(255, 255, 255, 1);
+  background: rgba(119, 119, 119, 0.9);
+}
+.ctrl .delete:hover {
+  width: 36px;
+  color: rgba(255, 255, 255, 1);
+  background: rgba(236, 88, 64, 0.9);
+}
+</style>
+
+<template>
+  <p class="image" v-if="isImage">
+    <img :src="src">
+    <partial name="ctrl"></partial>
+  </p>
+
+  <p class="file button" v-else>
     {{name}} {{size}}
-    <i class="delete" title="DELETE" @click.stop="del">X</i>
+    <partial name="ctrl"></partial>
     <i id="{{id}}" class="progress"></i>
   </p>
 </template>
@@ -18,6 +73,13 @@
       return {
         src: ''
       };
+    },
+
+    partials: {
+      ctrl: `<span class="ctrl">
+        <i class="download" title="DOWNLOAD" @click="down">DOWN</i>
+        <i class="delete" title="DELETE" @click="del">DEL</i>
+      </span>`
     },
 
     computed: {
@@ -42,7 +104,7 @@
     },
 
     methods: {
-      download() {
+      down() {
         let key = this.key;
         let type = this.type;
         let name = this.name;

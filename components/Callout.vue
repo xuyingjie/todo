@@ -24,32 +24,6 @@
 .card img:hover {
   border: 4px solid rgba(255, 255, 255, 0.8);
 }
-.down {
-  text-transform: none;
-  margin-right: 1rem;
-  background-color: rgba(255, 255, 255, 0.5);
-}
-.down:hover {
-  background-color: rgba(255, 255, 255, 0.8);
-}
-.down:active {
-  background-color: rgba(255, 255, 255, 0.6);
-}
-.down .delete {
-  position: absolute;
-  height: 100%;
-  width: 12px;
-  top: 0;
-  right: 0;
-  color: rgba(255, 255, 255, 0);
-  background: rgba(236, 88, 64, 0.2);
-  transition: all .5s linear;
-}
-.down .delete:hover {
-  width: 24px;
-  color: rgba(255, 255, 255, 1);
-  background: rgba(236, 88, 64, 0.8);
-}
 .remove {
   color: rgba(255, 0, 0, 0.8);
 }
@@ -94,8 +68,7 @@
     },
 
     compiled() {
-      let x = this.item.content;
-      let parts = x.split(/(!\[.*?,.*?,.*?,.*?\])/);
+      let parts = this.item.content.split(/(!\[.*?,.*?,.*?,.*?\])/);
       for (let i in parts) {
         if (i % 2 === 0) {
           if (parts[i] !== '') {
@@ -106,8 +79,14 @@
           parts[i] = `<Attachment name="${m[1]}" size="${m[2]}" type="${m[3]}" key="${m[4]}"></Attachment>`;
         }
       }
-      Vue.partial(this.item.id, parts.join(''));
-      this.content = this.item.id;
+
+      let c = parts.join('');
+      if (c === '') {
+        this.content = 'empty';
+      } else {
+        Vue.partial(this.item.id, c);
+        this.content = this.item.id;
+      }
     },
 
     methods: {
