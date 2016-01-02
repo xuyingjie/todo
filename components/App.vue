@@ -147,6 +147,29 @@
           this.todo = out;
         });
       },
+      del(key) {
+        let reg = new RegExp('!\\[.*?,.*?,.*?,' + key + ']');
+        let out = [...this.todo];
+        out = out.map(el => {
+          if (el.content.match(reg)) {
+            el.content = el.content.replace(reg, '');
+            el.lastChange = new Date().toString();
+          }
+          return el;
+        });
+        // Test
+        // this.todo = out;
+
+        upload({
+          key,
+          data: 'x',
+          success: () => {
+            this.sync(out, () => {
+              this.todo = out;
+            });
+          },
+        });
+      },
 
     },
 
