@@ -48,11 +48,16 @@
   color: rgba(255, 255, 255, 1);
   background: rgba(236, 88, 64, 0.9);
 }
+video {
+  max-width: 100%;
+}
 </style>
 
 <template>
   <p class="image" v-if="isImage">
-    <img :src="src">
+    <img :src="src" v-if="mtype === 'img'">
+    <video :src="src" controls v-if="mtype === 'video'">
+    </video>
     <partial name="ctrl"></partial>
   </p>
 
@@ -71,6 +76,7 @@
 
     data() {
       return {
+        mtype: '',
         src: ''
       };
     },
@@ -87,15 +93,13 @@
         return this.key.split('/')[1];
       },
       isImage() {
-        if (this.type.split('/')[0] === 'image') {
-          get({
-            key: this.key,
-            arrayBuffer: true,
-            success: data => {
-              let blob = new Blob([data], {'type': this.type});
-              this.src = URL.createObjectURL(blob);
-            },
-          });
+        if (this.type.match(/jpeg|icon|png|gif/)) {
+          this.mtype = 'img';
+          this.load();
+          return true;
+        } else if (this.type.match(/mp4/)) {
+          this.mtype = 'video';
+          this.load();
           return true;
         } else {
           return false;
@@ -104,6 +108,16 @@
     },
 
     methods: {
+      load() {
+        get({
+          key: this.key,
+          arrayBuffer: true,
+          success: data => {
+            let blob = new Blob([data], {'type': this.type});
+            this.src = URL.createObjectURL(blob);
+          },
+        });
+      },
       down() {
         let key = this.key;
         let type = this.type;
