@@ -143,5 +143,5 @@
         this.$dispatch('del', this.key);
       },
     }
-  }
+  };
 </script>

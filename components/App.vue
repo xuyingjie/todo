@@ -59,7 +59,7 @@
         } else {
           out.sort((a, b) => {
             return Date.parse(b.lastChange) - Date.parse(a.lastChange);
-          })
+          });
         }
         return out;
       }
@@ -232,5 +232,5 @@
       Editor,
     }
 
-  }
+  };
 </script>

@@ -60,7 +60,7 @@
     data() {
       return {
         content: 'empty'
-      }
+      };
     },
 
     partials: {
@@ -107,5 +107,5 @@
     components: {
       Attachment
     }
-  }
+  };
 </script>

@@ -1,6 +1,6 @@
-import Vue from 'vue'
-import App from './components/App.vue'
-import Join from './components/Join.vue'
+import Vue from 'vue';
+import App from './components/App.vue';
+import Join from './components/Join.vue';
 
 var app = new Vue({
   el: 'body',

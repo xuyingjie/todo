@@ -87,7 +87,7 @@
       return {
         color: ['primary', 'secondary', 'success', 'warning', 'alert'],
         uploadStatus: false,
-      }
+      };
     },
 
     methods: {
@@ -125,6 +125,5 @@
       },
     }
 
-  }
-
+  };
 </script>
