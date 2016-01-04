@@ -48,7 +48,7 @@
 </template>
 
 <script lang="babel">
-  import {get} from '../utils/http';
+  import {get} from '../utils/http'
 
   export default {
     props: ['status'],
@@ -59,24 +59,24 @@
 
         passwd: '',
         iv: '',
-      };
+      }
     },
 
     methods: {
       search() {
-        this.$dispatch('search', this.keyWord);
+        this.$dispatch('search', this.keyWord)
       },
       all() {
-        this.$dispatch('all');
+        this.$dispatch('all')
       },
       sort() {
-        this.$dispatch('sort');
+        this.$dispatch('sort')
       },
       add() {
-        this.$dispatch('add');
+        this.$dispatch('add')
       },
       logout() {
-        this.$dispatch('auth', false);
+        this.$dispatch('auth', false)
       },
       login() {
         get({
@@ -84,11 +84,11 @@
           passwd: this.passwd,
           iv: this.iv,
           success: data => {
-            localStorage.user = JSON.stringify(data.user);
-            this.$dispatch('auth', true);
+            localStorage.user = JSON.stringify(data.user)
+            this.$dispatch('auth', true)
           },
-        });
+        })
       },
     }
-  };
+  }
 </script>

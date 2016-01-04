@@ -69,7 +69,7 @@ video {
 </template>
 
 <script lang="babel">
-  import {get} from '../utils/http';
+  import {get} from '../utils/http'
 
   export default {
     props: ['name', 'size', 'type', 'key'],
@@ -78,7 +78,7 @@ video {
       return {
         mtype: '',
         src: ''
-      };
+      }
     },
 
     partials: {
@@ -90,19 +90,19 @@ video {
 
     computed: {
       id() {
-        return this.key.split('/')[1];
+        return this.key.split('/')[1]
       },
       isImage() {
         if (this.type.match(/jpeg|icon|png|gif/)) {
-          this.mtype = 'img';
-          this.load();
-          return true;
+          this.mtype = 'img'
+          this.load()
+          return true
         } else if (this.type.match(/mp4/)) {
-          this.mtype = 'video';
-          this.load();
-          return true;
+          this.mtype = 'video'
+          this.load()
+          return true
         } else {
-          return false;
+          return false
         }
       },
     },
@@ -113,49 +113,49 @@ video {
           key: this.key,
           arrayBuffer: true,
           success: data => {
-            let blob = new Blob([data], {'type': this.type});
-            this.src = URL.createObjectURL(blob);
+            let blob = new Blob([data], {'type': this.type})
+            this.src = URL.createObjectURL(blob)
           },
-        });
+        })
       },
       down() {
-        let key = this.key;
-        let type = this.type;
-        let name = this.name;
-        let progress = document.getElementById(this.id);
+        let key = this.key
+        let type = this.type
+        let name = this.name
+        let progress = document.getElementById(this.id)
         get({
           key,
           progress,
           arrayBuffer: true,
           success: data => {
-            let blob = new Blob([data], { type });
-            let objecturl = URL.createObjectURL(blob);
+            let blob = new Blob([data], { type })
+            let objecturl = URL.createObjectURL(blob)
 
             // 生成下载
-            let anchor = document.createElement('a');
-            anchor.href = objecturl;
+            let anchor = document.createElement('a')
+            anchor.href = objecturl
 
             // 新标签页打开
-            // anchor.target = '_blank';
+            // anchor.target = '_blank'
 
             // 直接下载
-            anchor.download = name;
+            anchor.download = name
 
-            document.body.appendChild(anchor);
-            let evt = document.createEvent('MouseEvents');
-            evt.initEvent('click', true, true);
-            anchor.dispatchEvent(evt);
-            document.body.removeChild(anchor);
+            document.body.appendChild(anchor)
+            let evt = document.createEvent('MouseEvents')
+            evt.initEvent('click', true, true)
+            anchor.dispatchEvent(evt)
+            document.body.removeChild(anchor)
 
             if (progress) {
-              progress.value = 0;
+              progress.value = 0
             }
           },
-        });
+        })
       },
       del() {
-        this.$dispatch('del', this.key);
+        this.$dispatch('del', this.key)
       },
     }
-  };
+  }
 </script>

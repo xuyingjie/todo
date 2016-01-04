@@ -14,12 +14,12 @@
 </template>
 
 <script lang="babel">
-  import Navbar from './Navbar.vue';
-  import Callout from './Callout.vue';
-  import Editor from './Editor.vue';
+  import Navbar from './Navbar.vue'
+  import Callout from './Callout.vue'
+  import Editor from './Editor.vue'
 
-  import {get, upload} from '../utils/http';
-  import { timeDiff } from '../utils/crypto';
+  import {get, upload} from '../utils/http'
+  import { timeDiff } from '../utils/crypto'
 
   export default {
     data() {
@@ -48,129 +48,129 @@
         },
 
         current: {},
-      };
+      }
     },
 
     computed: {
       list() {
-        let out = [...this.todo];
+        let out = [...this.todo]
         if (this.status.sortByCreateTime) {
-          out.reverse();
+          out.reverse()
         } else {
           out.sort((a, b) => {
-            return Date.parse(b.lastChange) - Date.parse(a.lastChange);
-          });
+            return Date.parse(b.lastChange) - Date.parse(a.lastChange)
+          })
         }
-        return out;
+        return out
       }
     },
 
     events: {
       auth(status) {
         if (status) {
-          this.init();
+          this.init()
         } else {
-          localStorage.removeItem('user');
-          this.version = {};
-          this.todo = [];
-          this.current = {};
+          localStorage.removeItem('user')
+          this.version = {}
+          this.todo = []
+          this.current = {}
         }
-        this.status.auth = status;
+        this.status.auth = status
       },
       search(keyword) {
-        this.keyword = keyword;
+        this.keyword = keyword
       },
       all() {
-        this.status.showAll = this.status.showAll ? false : true;
+        this.status.showAll = this.status.showAll ? false : true
       },
       sort() {
-        this.status.sortByCreateTime = this.status.sortByCreateTime ? false : true;
+        this.status.sortByCreateTime = this.status.sortByCreateTime ? false : true
       },
       cancel() {
-        this.status.edit = false;
+        this.status.edit = false
       },
       add() {
-        this.current = {color: 'primary', complete: false};
-        this.status.edit = true;
+        this.current = {color: 'primary', complete: false}
+        this.status.edit = true
       },
       edit(id) {
         this.current = Object.assign({}, this.todo.filter(element => {
-          return element.id === id;
-        })[0]);
+          return element.id === id
+        })[0])
 
-        this.status.edit = true;
+        this.status.edit = true
       },
       done(id) {
-        let out = [...this.todo];
+        let out = [...this.todo]
         out = out.map(el => {
           if (el.id === id) {
-            el.complete = el.complete ? false : true;
-            return el;
+            el.complete = el.complete ? false : true
+            return el
           } else {
-            return el;
+            return el
           }
-        });
+        })
 
         this.sync(out, () => {
-          this.todo = out;
-        });
+          this.todo = out
+        })
       },
       save(item) {
-        let out = [...this.todo];
-        item.lastChange = new Date().toString();
+        let out = [...this.todo]
+        item.lastChange = new Date().toString()
         if (!item.id) {
-          item.id = timeDiff();
-          item.createTime = item.lastChange;
-          out.push(item);
+          item.id = timeDiff()
+          item.createTime = item.lastChange
+          out.push(item)
         } else {
           out = out.map(el => {
             if (el.id === item.id) {
-              return item;
+              return item
             } else {
-              return el;
+              return el
             }
-          });
+          })
         }
 
         this.sync(out, () => {
-          this.todo = out;
-          this.status.edit = false;
-        });
+          this.todo = out
+          this.status.edit = false
+        })
       },
       rm(id) {
-        let out = [...this.todo];
+        let out = [...this.todo]
         out = out.filter(el => {
-          return el.id !== id;
-        });
+          return el.id !== id
+        })
 
         this.sync(out, () => {
-          this.todo = out;
-        });
+          this.todo = out
+        })
       },
       del(key) {
-        let reg = new RegExp('!\\[.*?,.*?,.*?,' + key + ']');
-        let out = [...this.todo];
+        let reg = new RegExp('!\\[.*?,.*?,.*?,' + key + ']')
+        let out = [...this.todo]
         out = out.map(el => {
           if (el.content.match(reg)) {
             // 直接更新 el 视图不更新
-            let item = Object.assign({}, el);
-            item.content = item.content.replace(reg, '');
-            item.lastChange = new Date().toString();
-            return item;
+            let item = Object.assign({}, el)
+            item.content = item.content.replace(reg, '')
+            item.lastChange = new Date().toString()
+            return item
           } else {
-            return el;
+            return el
           }
-        });
+        })
 
         upload({
           key,
           data: 'x',
           success: () => {
             this.sync(out, () => {
-              this.todo = out;
-            });
+              this.todo = out
+            })
           },
-        });
+        })
       },
 
     },
@@ -180,20 +180,20 @@
         get({
           key: 'version',
           success: data => {
-            this.version = data;
+            this.version = data
 
             get({
               key: 'todo/' + this.version.todo,
               success: data => {
-                this.todo = data;
+                this.todo = data
               }
-            });
+            })
 
           }
-        });
+        })
       },
       sync(out, callback) {
-        this.version.todo += 1;
+        this.version.todo += 1
         upload({
           key: 'todo/' + this.version.todo,
           data: JSON.stringify(out),
@@ -203,26 +203,27 @@
               key: 'version',
               data: JSON.stringify(this.version),
               success: () => {
-                callback();
+                callback()
               }
-            });
+            })
 
           }
-        });
+        })
       },
       hasKeyword(str) {
-        if (str.match(this.keyword)) {
-          return true;
+        let re = new RegExp(this.keyword, 'i')
+        if (str.match(re)) {
+          return true
         } else {
-          return false;
+          return false
         }
       },
     },
 
     compiled() {
       if (localStorage.user) {
-        this.status.auth = true;
-        this.init();
+        this.status.auth = true
+        this.init()
       }
     },
 
@@ -232,5 +233,5 @@
       Editor,
     }
 
-  };
+  }
 </script>

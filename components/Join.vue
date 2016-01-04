@@ -29,7 +29,7 @@
 </template>
 
 <script lang="babel">
-  import {upload} from '../utils/http';
+  import {upload} from '../utils/http'
 
   export default {
     data() {
@@ -43,11 +43,12 @@
           passwd: '',
           iv: '',
         },
-      };
+      }
     },
 
     methods: {
       join() {
+        localStorage.user = JSON.stringify(this.user)
         upload({
           key: this.name,
           data: JSON.stringify({
@@ -55,11 +56,10 @@
           }),
           passwd: this.secret,
           success: () => {
-            localStorage.user = JSON.stringify(this.user);
-            location.replace('#');
+            location.replace('#')
           },
-        });
+        })
       },
     },
-  };
+  }
 </script>

@@ -76,9 +76,9 @@
 </template>
 
 <script lang="babel">
-  import {upload} from '../utils/http';
-  import {insertText} from '../utils/others';
-  import * as crypto from '../utils/crypto';
+  import {upload} from '../utils/http'
+  import {insertText} from '../utils/others'
+  import * as crypto from '../utils/crypto'
 
   export default {
     props: ['item'],
@@ -87,43 +87,43 @@
       return {
         color: ['primary', 'secondary', 'success', 'warning', 'alert'],
         uploadStatus: false,
-      };
+      }
     },
 
     methods: {
       switchColor(c) {
-        this.item.color = c;
+        this.item.color = c
       },
       cancel() {
-        this.$dispatch('cancel');
+        this.$dispatch('cancel')
       },
       save() {
-        this.$dispatch('save', this.item);
+        this.$dispatch('save', this.item)
       },
 
       readAndUpload(event) {
-        this.uploadStatus = true;
-        let file = event.target.files[0];
-        let reader = new FileReader();
+        this.uploadStatus = true
+        let file = event.target.files[0]
+        let reader = new FileReader()
         reader.onload = () => {
-          let key = 'u/' + crypto.timeDiff();
+          let key = 'u/' + crypto.timeDiff()
           upload({
             key,
             data: reader.result,
             arrayBuffer: true,
             progress: this.$els.progress,
             success: () => {
-              this.uploadStatus = false;
-              let c = `\n![${file.name},${(file.size/1024).toFixed(2)}KB,${file.type},${key}]`;
-              let textarea = this.$els.textarea;
-              insertText(textarea, c);
-              this.item.content = textarea.value;
+              this.uploadStatus = false
+              let c = `\n![${file.name},${(file.size/1024).toFixed(2)}KB,${file.type},${key}]`
+              let textarea = this.$els.textarea
+              insertText(textarea, c)
+              this.item.content = textarea.value
             },
-          });
-        };
-        reader.readAsArrayBuffer(file);
+          })
+        }
+        reader.readAsArrayBuffer(file)
       },
     }
 
-  };
+  }
 </script>

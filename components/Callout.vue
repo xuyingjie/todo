@@ -50,9 +50,9 @@
 
 
 <script lang="babel">
-  import Vue from 'vue';
-  import Attachment from './Attachment.vue';
-  import marked from 'marked';
+  import Vue from 'vue'
+  import Attachment from './Attachment.vue'
+  import marked from 'marked'
 
   export default {
     props: ['item'],
@@ -60,7 +60,7 @@
     data() {
       return {
         content: 'empty'
-      };
+      }
     },
 
     partials: {
@@ -68,44 +68,44 @@
     },
 
     compiled() {
-      let parts = this.item.content.split(/(!\[.*?,.*?,.*?,.*?\])/);
+      let parts = this.item.content.split(/(!\[.*?,.*?,.*?,.*?\])/)
       for (let i in parts) {
         if (i % 2 === 0) {
           if (parts[i] !== '') {
-            parts[i] = marked(parts[i], { breaks: true, sanitize: true });
+            parts[i] = marked(parts[i], { breaks: true, sanitize: true })
           }
         } else {
-          let m = parts[i].match(/!\[(.*?),(.*?),(.*?),(.*?)\]/);
-          parts[i] = `<Attachment name="${m[1]}" size="${m[2]}" type="${m[3]}" key="${m[4]}"></Attachment>`;
+          let m = parts[i].match(/!\[(.*?),(.*?),(.*?),(.*?)\]/)
+          parts[i] = `<Attachment name="${m[1]}" size="${m[2]}" type="${m[3]}" key="${m[4]}"></Attachment>`
         }
       }
 
-      let c = parts.join('');
+      let c = parts.join('')
       if (c === '') {
-        this.content = 'empty';
+        this.content = 'empty'
       } else {
-        Vue.partial(this.item.id, c);
-        this.content = this.item.id;
+        Vue.partial(this.item.id, c)
+        this.content = this.item.id
       }
     },
 
     methods: {
       edit(id) {
-        this.$dispatch('edit', id);
+        this.$dispatch('edit', id)
       },
       done(id) {
-        this.$dispatch('done', id);
+        this.$dispatch('done', id)
       },
       redo(id) {
-        this.$dispatch('done', id);
+        this.$dispatch('done', id)
       },
       rm(id) {
-        this.$dispatch('rm', id);
+        this.$dispatch('rm', id)
       },
     },
 
     components: {
       Attachment
     }
-  };
+  }
 </script>

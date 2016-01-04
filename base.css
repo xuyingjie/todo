@@ -189,17 +189,18 @@ kbd {
 pre {
   margin-bottom: 1rem;
 }
-
+code {
+  font-family: "Source Code Pro", Consolas, "Liberation Mono", Courier, 方正悠黑, monospace;
+  font-weight: normal;
+  color: #0a0a0a;
+  padding: 0px 5px;
+  border-radius: 2px;
+  background: rgba(249, 249, 249, 0.7);
+}
 pre > code {
   display: block;
   overflow-x: auto;
   padding: 1rem;
-  background: rgba(249, 249, 249, 0.7);
-
-  font-family: "Source Code Pro", Consolas, "Liberation Mono", Courier, 方正悠黑, monospace;
-  font-weight: normal;
-  color: #0a0a0a;
-  border-radius: 2px;
 }
 
 .row {
