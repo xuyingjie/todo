@@ -83,11 +83,10 @@
           key: 'user',
           passwd: this.passwd,
           iv: this.iv,
-          success: data => {
+        }).then(data => {
             localStorage.user = JSON.stringify(data.user)
             this.$dispatch('auth', true)
-          },
-        })
+          })
       },
     }
   }

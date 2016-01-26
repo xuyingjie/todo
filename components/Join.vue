@@ -55,10 +55,9 @@
             user: this.user,
           }),
           passwd: this.secret,
-          success: () => {
+        }).then(() => {
             location.replace('#')
-          },
-        })
+          })
       },
     },
   }

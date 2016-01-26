@@ -111,12 +111,11 @@ video {
       load() {
         get({
           key: this.key,
-          arrayBuffer: true,
-          success: data => {
+          buf: true,
+        }).then(data => {
             let blob = new Blob([data], {'type': this.type})
             this.src = URL.createObjectURL(blob)
-          },
-        })
+          })
       },
       down() {
         let key = this.key
@@ -126,8 +125,8 @@ video {
         get({
           key,
           progress,
-          arrayBuffer: true,
-          success: data => {
+          buf: true,
+        }).then(data => {
             let blob = new Blob([data], { type })
             let objecturl = URL.createObjectURL(blob)
 
@@ -150,8 +149,7 @@ video {
             if (progress) {
               progress.value = 0
             }
-          },
-        })
+          })
       },
       del() {
         this.$dispatch('del', this.key)

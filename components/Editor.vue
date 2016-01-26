@@ -110,16 +110,15 @@
           upload({
             key,
             data: reader.result,
-            arrayBuffer: true,
+            buf: true,
             progress: this.$els.progress,
-            success: () => {
+          }).then(() => {
               this.uploadStatus = false
               let c = `\n![${file.name},${(file.size/1024).toFixed(2)}KB,${file.type},${key}]`
               let textarea = this.$els.textarea
               insertText(textarea, c)
               this.item.content = textarea.value
-            },
-          })
+            })
         }
         reader.readAsArrayBuffer(file)
       },

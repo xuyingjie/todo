@@ -57,9 +57,7 @@
         if (this.status.sortByCreateTime) {
           out.reverse()
         } else {
-          out.sort((a, b) => {
-            return Date.parse(b.lastChange) - Date.parse(a.lastChange)
-          })
+          out.sort((a, b) => Date.parse(b.lastChange) - Date.parse(a.lastChange))
         }
         return out
       }
@@ -94,10 +92,7 @@
         this.status.edit = true
       },
       edit(id) {
-        this.current = Object.assign({}, this.todo.filter(element => {
-          return element.id === id
-        })[0])
-
+        this.current = Object.assign({}, this.todo.filter(el => el.id === id)[0])
         this.status.edit = true
       },
       done(id) {
@@ -139,9 +134,7 @@
       },
       rm(id) {
         let out = [...this.todo]
-        out = out.filter(el => {
-          return el.id !== id
-        })
+        out = out.filter(el => el.id !== id)
 
         this.sync(out, () => {
           this.todo = out
@@ -162,53 +155,41 @@
           }
         })
 
-        upload({
-          key,
-          data: 'x',
-          success: () => {
+        upload({ key, data: 'x' })
+          .then(() => {
             this.sync(out, () => {
               this.todo = out
             })
-          },
-        })
+          })
       },
 
     },
 
     methods: {
       init() {
-        get({
-          key: 'version',
-          success: data => {
-            this.version = data
+        get({ key: 'version' })
+          .then(data => {
+            this.version = JSON.parse(data)
 
-            get({
-              key: 'todo/' + this.version.todo,
-              success: data => {
-                this.todo = data
-              }
-            })
+            let key = 'todo/' + this.version.todo
+            get({ key })
+              .then(data => {
+                this.todo = JSON.parse(data)
+              })
 
-          }
-        })
+          })
       },
       sync(out, callback) {
         this.version.todo += 1
-        upload({
-          key: 'todo/' + this.version.todo,
-          data: JSON.stringify(out),
-          success: () => {
+        let key = 'todo/' + this.version.todo
+        upload({ key, data: JSON.stringify(out) })
+          .then(() => {
 
-            upload({
-              key: 'version',
-              data: JSON.stringify(this.version),
-              success: () => {
+            upload({ key: 'version', data: JSON.stringify(this.version) })
+              .then(() => {
                 callback()
-              }
-            })
-
-          }
-        })
+              })
+          })
       },
       hasKeyword(str) {
         let re = new RegExp(this.keyword, 'i')
