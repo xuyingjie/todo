@@ -51,9 +51,7 @@
         localStorage.user = JSON.stringify(this.user)
         upload({
           key: this.name,
-          data: JSON.stringify({
-            user: this.user,
-          }),
+          data: JSON.stringify(this.user),
           passwd: this.secret,
         }).then(() => {
             location.replace('#')

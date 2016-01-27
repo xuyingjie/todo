@@ -69,18 +69,18 @@
 
     compiled() {
       let parts = this.item.content.split(/(!\[.*?,.*?,.*?,.*?\])/)
-      for (let i in parts) {
+      let c = ''
+      parts.forEach((x, i) => {
         if (i % 2 === 0) {
-          if (parts[i] !== '') {
-            parts[i] = marked(parts[i], { breaks: true, sanitize: true })
+          if (x !== '') {
+            c += marked(x, { breaks: true, sanitize: true })
           }
         } else {
-          let m = parts[i].match(/!\[(.*?),(.*?),(.*?),(.*?)\]/)
-          parts[i] = `<Attachment name="${m[1]}" size="${m[2]}" type="${m[3]}" key="${m[4]}"></Attachment>`
+          let m = x.match(/!\[(.*?),(.*?),(.*?),(.*?)\]/)
+          c += `<Attachment name="${m[1]}" size="${m[2]}" type="${m[3]}" key="${m[4]}"></Attachment>`
         }
-      }
+      })
 
-      let c = parts.join('')
       if (c === '') {
         this.content = 'empty'
       } else {

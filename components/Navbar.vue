@@ -38,8 +38,8 @@
       </template>
 
       <form @submit.prevent="login" v-else>
-        <input type="password" placeholder="Little Pei's birthday" v-model="passwd">
-        <input type="text" placeholder="The meaning of DZT" v-model="iv">
+        <input type="text" placeholder="Name" v-model="iv">
+        <input type="password" placeholder="Password" v-model="passwd">
         <input class="button" type="submit" value="LOGIN" @click="login">
       </form>
 
@@ -84,7 +84,7 @@
           passwd: this.passwd,
           iv: this.iv,
         }).then(data => {
-            localStorage.user = JSON.stringify(data.user)
+            localStorage.user = data
             this.$dispatch('auth', true)
           })
       },

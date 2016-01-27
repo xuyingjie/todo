@@ -55,9 +55,7 @@ video {
 
 <template>
   <p class="image" v-if="isImage">
-    <img :src="src" v-if="mtype === 'img'">
-    <video :src="src" controls v-if="mtype === 'video'">
-    </video>
+    <img :src="src">
     <partial name="ctrl"></partial>
   </p>
 
@@ -76,7 +74,6 @@ video {
 
     data() {
       return {
-        mtype: '',
         src: ''
       }
     },
@@ -95,10 +92,6 @@ video {
       isImage() {
         if (this.type.match(/jpeg|icon|png|gif/)) {
           this.mtype = 'img'
-          this.load()
-          return true
-        } else if (this.type.match(/mp4/)) {
-          this.mtype = 'video'
           this.load()
           return true
         } else {
