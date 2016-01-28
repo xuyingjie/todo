@@ -29,7 +29,7 @@
 </template>
 
 <script lang="babel">
-  import {upload} from '../utils/http'
+  import { url, encrypt, strToArrayBuffer, form } from '../utils/http'
 
   export default {
     data() {
@@ -49,12 +49,19 @@
     methods: {
       join() {
         localStorage.user = JSON.stringify(this.user)
-        upload({
-          key: this.name,
-          data: JSON.stringify(this.user),
-          passwd: this.secret,
-        }).then(() => {
-            location.replace('#')
+
+        let buf = strToArrayBuffer(JSON.stringify(this.user))
+        encrypt(this.secret, this.user.iv, buf)
+          .then(out => {
+            fetch(url, {
+              method: 'POST',
+              body: form({
+                key: this.name,
+                data: out
+              })
+            }).then(() => {
+              location.replace('#')
+            })
           })
       },
     },

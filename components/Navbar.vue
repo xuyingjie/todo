@@ -24,14 +24,17 @@
   .bar form input {
     margin-right: 10px;
   }
+  .bar h1 {
+    margin: 0;
+    line-height: inherit;
+  }
 </style>
 
 <template>
   <div class="bar">
     <nav class="row">
       <template v-if="status.auth">
-        <input class="item" type="text" name="search" placeholder="Search..." v-model="keyWord" @input="search">
-        <button type="button" class="{{status.showAll?'active':''}}" @click="all">SHOW ALL</button>
+        <h1 class="item">title</h1>
         <button type="button" class="{{status.sortByCreateTime?'active':''}}" @click="sort">SORT BY CREATE TIME</button>
         <button type="button" @click="add">ADD</button>
         <button type="button" @click="logout">LOGOUT</button>
@@ -48,7 +51,7 @@
 </template>
 
 <script lang="babel">
-  import {get} from '../utils/http'
+  import { url, decrypt, arrayBufferToStr } from '../tools'
 
   export default {
     props: ['status'],
@@ -76,16 +79,18 @@
         this.$dispatch('add')
       },
       logout() {
+        localStorage.removeItem('user')
         this.$dispatch('auth', false)
       },
       login() {
-        get({
-          key: 'user',
-          passwd: this.passwd,
-          iv: this.iv,
-        }).then(data => {
-            localStorage.user = data
-            this.$dispatch('auth', true)
+        fetch(`${url}/user`)
+          .then(res => res.arrayBuffer())
+          .then(buf => {
+            decrypt(this.passwd, this.iv, buf)
+              .then(out => {
+                localStorage.user = arrayBufferToStr(out)
+                this.$dispatch('auth', true)
+              })
           })
       },
     }

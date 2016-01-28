@@ -15,13 +15,11 @@
   .editor {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-  }
-  .editor button[name=cancel] {
-    margin: 3em 0;
+    /*align-items: flex-end;*/
   }
   .editor .footer {
     display: flex;
+    justify-content: space-between;
     width: 100%;
   }
   .editor input[type=file] {
@@ -56,18 +54,19 @@
 <template>
   <div class="layer">
     <div class="row {{item.color}} editor">
-      <button type="button" name="cancel" @click="cancel">CANCEL</button>
-      <textarea rows="24" v-el:textarea v-model="item.content"></textarea>
+
+      <p>{{item.img}}</p>
+
+      <label class="upload button {{uploadStatus?'hover':''}}">
+        INSERT FILE
+        <input type="file" @change="readAndUpload($event)">
+        <i class="progress" v-el:progress></i>
+      </label>
+
+      <textarea rows="20" v-el:textarea v-model="item.text"></textarea>
 
       <div class="footer">
-        <span class="select-label item">
-          <i class="{{c}} label {{c===item.color?'on':''}}" v-for="c in color" @click="switchColor(c)"></i>
-        </span>
-        <label class="upload button {{uploadStatus?'hover':''}}">
-          INSERT FILE
-          <input type="file" @change="readAndUpload($event)">
-          <i class="progress" v-el:progress></i>
-        </label>
+        <button type="button" @click="cancel">CANCEL</button>
         <button type="button" @click="save">SAVE</button>
       </div>
 
@@ -76,29 +75,31 @@
 </template>
 
 <script lang="babel">
-  import {upload} from '../utils/http'
-  import {insertText} from '../utils/others'
-  import * as crypto from '../utils/crypto'
+  import { url, form } from '../tools'
 
   export default {
     props: ['item'],
 
     data() {
       return {
-        color: ['primary', 'secondary', 'success', 'warning', 'alert'],
-        uploadStatus: false,
+        uploadStatus: false
       }
     },
 
     methods: {
-      switchColor(c) {
-        this.item.color = c
-      },
       cancel() {
         this.$dispatch('cancel')
       },
       save() {
-        this.$dispatch('save', this.item)
+        // encrypt item.text
+        this.item.lastChange = new Date().toString()
+        if (!this.item.id) {
+          this.item.id = Date.now()
+          this.$dispatch('save', this.item, true)
+        } else {
+          this.$dispatch('save', this.item, false)
+        }
+
       },
 
       readAndUpload(event) {
@@ -106,19 +107,19 @@
         let file = event.target.files[0]
         let reader = new FileReader()
         reader.onload = () => {
-          let key = 'u/' + crypto.timeDiff()
-          upload({
-            key,
-            data: reader.result,
-            buf: true,
-            progress: this.$els.progress,
-          }).then(() => {
-              this.uploadStatus = false
-              let c = `\n![${file.name},${(file.size/1024).toFixed(2)}KB,${file.type},${key}]`
-              let textarea = this.$els.textarea
-              insertText(textarea, c)
-              this.item.content = textarea.value
+          let id = Date.now()
+          fetch(url, {
+            method: 'POST',
+            body: form({
+              key: `img/${id}`,
+              data: reader.result,
+              // type: file.type,
+              progress: this.$els.progress,
             })
+          }).then(() => {
+            this.item.img.push(id)
+            this.uploadStatus = false
+          })
         }
         reader.readAsArrayBuffer(file)
       },

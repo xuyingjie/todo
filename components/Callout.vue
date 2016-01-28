@@ -2,6 +2,7 @@
 .card {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   background: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
@@ -17,95 +18,58 @@
   padding: 0 16px;
   line-height: 36px;
 }
-.card img {
-  border: 4px solid rgba(255, 255, 255, 0.5);
-  transition: border .5s ease;
-}
-.card img:hover {
-  border: 4px solid rgba(255, 255, 255, 0.8);
-}
-.remove {
-  color: rgba(255, 0, 0, 0.8);
-}
 </style>
 
 <template>
-  <div class="row {{item.color}} card">
+  <div class="row card">
     <section>
-      <partial :name="content"></partial>
+      <img :src="src" v-for="src in img">
+      {{{item.text}}}
     </section>
     <nav>
       <span class="item">{{new Date(item.lastChange).toDateString()}}</span>
-      <template v-if="!item.complete">
-        <button type="button" @click="edit(item.id)">EDIT</button>
-        <button type="button" @click="done(item.id)">DONE</button>
-      </template>
-      <template v-else>
-        <button type="button" class="remove" @click="rm(item.id)">DELETE</button>
-        <button type="button" @click="redo(item.id)">REDO</button>
-      </template>
+      <button type="button" @click="edit(item.id)">EDIT</button>
     </nav>
   </div>
 </template>
 
 
 <script lang="babel">
-  import Vue from 'vue'
-  import Attachment from './Attachment.vue'
   import marked from 'marked'
+  import { url, dns } from '../tools'
 
   export default {
-    props: ['item'],
+    props: ['id'],
 
     data() {
       return {
-        content: 'empty'
+        item: {
+          id: '',
+          img: [],
+          text: '',
+          lastChange: '',
+        }
       }
     },
-
-    partials: {
-      empty: '<template></template>'
+    computed: {
+      img() {
+        return this.item.img.map(id => `${dns}/img/${id}@.webp`)
+      }
     },
 
     compiled() {
-      let parts = this.item.content.split(/(!\[.*?,.*?,.*?,.*?\])/)
-      let c = ''
-      parts.forEach((x, i) => {
-        if (i % 2 === 0) {
-          if (x !== '') {
-            c += marked(x, { breaks: true, sanitize: true })
-          }
-        } else {
-          let m = x.match(/!\[(.*?),(.*?),(.*?),(.*?)\]/)
-          c += `<Attachment name="${m[1]}" size="${m[2]}" type="${m[3]}" key="${m[4]}"></Attachment>`
-        }
-      })
-
-      if (c === '') {
-        this.content = 'empty'
-      } else {
-        Vue.partial(this.item.id, c)
-        this.content = this.item.id
-      }
+      fetch(`${url}/set/${this.id}`)
+        .then(res => res.json())
+        .then(out => {
+          out.text = marked(out.text, { breaks: true, sanitize: true })
+          this.item = out
+        })
     },
 
     methods: {
       edit(id) {
         this.$dispatch('edit', id)
-      },
-      done(id) {
-        this.$dispatch('done', id)
-      },
-      redo(id) {
-        this.$dispatch('done', id)
-      },
-      rm(id) {
-        this.$dispatch('rm', id)
-      },
-    },
-
-    components: {
-      Attachment
+      }
     }
   }
 </script>
