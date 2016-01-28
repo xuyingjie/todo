@@ -36,7 +36,7 @@
 
 <script lang="babel">
   import marked from 'marked'
-  import { url, dns } from '../tools'
+  import { url, dns, get, decStr } from '../tools'
 
   export default {
     props: ['id'],
@@ -58,12 +58,12 @@
     },
 
     compiled() {
-      fetch(`${url}/set/${this.id}`)
-        .then(res => res.json())
-        .then(out => {
-          out.text = marked(out.text, { breaks: true, sanitize: true })
+      get(`set/${this.id}`).then(out => {
+        decStr(out.text).then(str => {
+          out.text = marked(str, { breaks: true, sanitize: true })
           this.item = out
         })
+      })
     },
 
     methods: {

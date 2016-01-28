@@ -1,8 +1,45 @@
-export const bucket = ''
-export const url = `https://${bucket}.oss-cn-beijing.aliyuncs.com`
+const bucket = ''
+const url = `https://${bucket}.oss-cn-beijing.aliyuncs.com`
 export const dns = `http://${bucket}.img-cn-beijing.aliyuncs.com`
 
-export function form({ key, data }) {
+export function get(key, { responseType, progress } = {}) {
+  return new Promise(resolve => {
+
+    let xhr = new XMLHttpRequest()
+    xhr.open('GET', `${url}/${key}`)
+    xhr.responseType = responseType ? responseType : 'json'
+
+    if (progress) xhr.onprogress = (e) => {
+      if (e.lengthComputable) progress.style.width = e.loaded / e.total * 100 + '%'
+    }
+
+    xhr.onload = () => {
+      resolve(xhr.response)
+    }
+
+    xhr.send(null)
+  })
+}
+
+export function upload(data, { progress } = {}) {
+  return new Promise(resolve => {
+
+    let xhr = new XMLHttpRequest()
+    xhr.open('POST', url)
+
+    if (progress) xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) progress.style.width = e.loaded / e.total * 100 + '%'
+    }
+
+    xhr.onload = () => {
+      resolve(xhr.response)
+    }
+
+    xhr.send(data)
+  })
+}
+
+export function form(key, data) {
   const user = JSON.parse(localStorage.user)
   const AK = user.AK
   const SK = user.SK
@@ -41,6 +78,7 @@ export function form({ key, data }) {
   return formData
 }
 
+
 export function arrayBufferToStr(buf) {
   return String.fromCharCode.apply(null, new Uint16Array(buf))
 }
@@ -54,12 +92,34 @@ export function strToArrayBuffer(str) {
   return buf
 }
 
-
 //
 // WebCryptoAPI
-// or use Promise
 //
-export function importKey(str) {
+export function encStr(str) {
+  return new Promise(resolve => {
+    let user = JSON.parse(localStorage.user)
+    let buf = strToArrayBuffer(str)
+    encrypt(user.passwd, user.iv, buf).then(out => {
+      resolve(arrayBufferToStr(out))
+    })
+  })
+}
+
+export function decStr(str) {
+  return new Promise(resolve => {
+    if (localStorage.user) {
+      let user = JSON.parse(localStorage.user)
+      let buf = strToArrayBuffer(str)
+      decrypt(user.passwd, user.iv, buf).then(out => {
+        resolve(arrayBufferToStr(out))
+      })
+    } else {
+      resolve(str)
+    }
+  })
+}
+
+function importKey(str) {
   return new Promise((resolve, reject) => {
     window.crypto.subtle.importKey(
       'raw', // can be 'jwk' or 'raw'

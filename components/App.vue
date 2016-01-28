@@ -17,7 +17,7 @@
   import Navbar from './Navbar.vue'
   import Callout from './Callout.vue'
   import Editor from './Editor.vue'
-  import { url, form } from '../tools'
+  import { get, upload, form } from '../tools'
 
   export default {
     data() {
@@ -54,33 +54,23 @@
         this.status.edit = true
       },
       edit(id) {
-        fetch(`${url}/set/${id}`)
-          .then(res => res.json())
-          .then(out => {
+        get(`set/${id}`).then(out => {
+          decStr(out.text).then(str => {
             this.current = out
+            this.status.edit = true
           })
-        this.status.edit = true
+        })
       },
 
       save(item, newItem) {
         let out = [...this.list]
         if (newItem) out.push(item.id)
 
-        fetch(url, {
-          method: 'POST',
-          body: form({
-            key: `set/${item.id}`,
-            data: JSON.stringify(item)
-          })
-        }).then(() => {
+        let f = form(`set/${item.id}`, JSON.stringify(item))
+        upload(f).then(() => {
           if (newItem) {
-            fetch(url, {
-              method: 'POST',
-              body: form({
-                key: `list`,
-                data: JSON.stringify({ list: out })
-              })
-            }).then(() => {
+            let f = form(`list`, JSON.stringify({ list: out }))
+            upload(f).then(() => {
               this.list = out
               this.status.edit = false
             })
@@ -92,15 +82,10 @@
       },
     },
 
-    methods: {
-    },
-
     compiled() {
-      fetch(`${url}/list`)
-        .then(res => res.json())
-        .then(out => {
-          this.list = out.list
-        })
+      get('list').then(out => {
+        this.list = out.list
+      })
 
       if (localStorage.user) {
         this.status.auth = true

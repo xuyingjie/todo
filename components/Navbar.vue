@@ -35,7 +35,6 @@
     <nav class="row">
       <template v-if="status.auth">
         <h1 class="item">title</h1>
-        <button type="button" class="{{status.sortByCreateTime?'active':''}}" @click="sort">SORT BY CREATE TIME</button>
         <button type="button" @click="add">ADD</button>
         <button type="button" @click="logout">LOGOUT</button>
       </template>
@@ -51,30 +50,19 @@
 </template>
 
 <script lang="babel">
-  import { url, decrypt, arrayBufferToStr } from '../tools'
+  import { get, decrypt, arrayBufferToStr } from '../tools'
 
   export default {
     props: ['status'],
 
     data() {
       return {
-        keyWord: '',
-
         passwd: '',
         iv: '',
       }
     },
 
     methods: {
-      search() {
-        this.$dispatch('search', this.keyWord)
-      },
-      all() {
-        this.$dispatch('all')
-      },
-      sort() {
-        this.$dispatch('sort')
-      },
       add() {
         this.$dispatch('add')
       },
@@ -83,15 +71,12 @@
         this.$dispatch('auth', false)
       },
       login() {
-        fetch(`${url}/user`)
-          .then(res => res.arrayBuffer())
-          .then(buf => {
-            decrypt(this.passwd, this.iv, buf)
-              .then(out => {
-                localStorage.user = arrayBufferToStr(out)
-                this.$dispatch('auth', true)
-              })
+        get('user', {responseType: 'arraybuffer'}).then(buf => {
+          decrypt(this.passwd, this.iv, buf).then(out => {
+            localStorage.user = arrayBufferToStr(out)
+            this.$dispatch('auth', true)
           })
+        })
       },
     }
   }

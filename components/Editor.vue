@@ -31,23 +31,9 @@
     border-bottom: none;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
   }
-  .select-label {
-    display: flex;
-    align-items: center;
-  }
-  .label.on {
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.42);
-  }
   .upload {
     position: relative;
     width: 150px;
-  }
-  .button .progress {
-    position: absolute;
-    height: 100%;
-    left: 0;
-    bottom: 0;
-    background: rgba(33, 153, 232, 0.2);
   }
 </style>
 
@@ -60,7 +46,6 @@
       <label class="upload button {{uploadStatus?'hover':''}}">
         INSERT FILE
         <input type="file" @change="readAndUpload($event)">
-        <i class="progress" v-el:progress></i>
       </label>
 
       <textarea rows="20" v-el:textarea v-model="item.text"></textarea>
@@ -75,7 +60,7 @@
 </template>
 
 <script lang="babel">
-  import { url, form } from '../tools'
+  import { upload, form, encStr } from '../tools'
 
   export default {
     props: ['item'],
@@ -91,15 +76,16 @@
         this.$dispatch('cancel')
       },
       save() {
-        // encrypt item.text
-        this.item.lastChange = new Date().toString()
-        if (!this.item.id) {
-          this.item.id = Date.now()
-          this.$dispatch('save', this.item, true)
-        } else {
-          this.$dispatch('save', this.item, false)
-        }
-
+        encStr(this.item.text).then(str => {
+          this.item.text = str
+          this.item.lastChange = new Date().toString()
+          if (!this.item.id) {
+            this.item.id = Date.now()
+            this.$dispatch('save', this.item, true)
+          } else {
+            this.$dispatch('save', this.item, false)
+          }
+        })
       },
 
       readAndUpload(event) {
@@ -108,15 +94,8 @@
         let reader = new FileReader()
         reader.onload = () => {
           let id = Date.now()
-          fetch(url, {
-            method: 'POST',
-            body: form({
-              key: `img/${id}`,
-              data: reader.result,
-              // type: file.type,
-              progress: this.$els.progress,
-            })
-          }).then(() => {
+          let f = form(`img/${id}`, reader.result) // type: file.type,
+          upload(f).then(() => {
             this.item.img.push(id)
             this.uploadStatus = false
           })

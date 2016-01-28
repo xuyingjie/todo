@@ -283,56 +283,6 @@ input[type=text], input[type=password], textarea {
   color: inherit;
 }
 
-.label {
-  display: block;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  margin-right: 5px;
-}
-.label.primary {
-  background: #2199e8;
-  color: #fefefe;
-}
-.label.secondary {
-  background: #777;
-  color: #fefefe;
-}
-.label.success {
-  background: #3adb76;
-  color: #fefefe;
-}
-.label.alert {
-  background: #ec5840;
-  color: #fefefe;
-}
-.label.warning {
-  background: #ffae00;
-  color: #fefefe;
-}
-
-.card.primary {
-  background-color: #DEF0FC; }
-.card.secondary {
-  background-color: #EBEBEB; }
-.card.success {
-  background-color: #E1FAEA; }
-.card.alert {
-  background-color: #FCE6E2; }
-.card.warning {
-  background-color: #FFF3D9; }
-
-.editor.primary textarea {
-  border: 1px solid #DEF0FC; }
-.editor.secondary textarea {
-  border: 1px solid #EBEBEB; }
-.editor.success textarea {
-  border: 1px solid #E1FAEA; }
-.editor.alert textarea {
-  border: 1px solid #FCE6E2; }
-.editor.warning textarea {
-  border: 1px solid #FFF3D9; }
-
 /*https://github.com/daneden/animate.css*/
 @keyframes fadeInDown {
   from {
